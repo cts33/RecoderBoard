@@ -35,27 +35,32 @@ public class GdLocationManager {
         }
         return mInstance;
     }
+
     private GdLocationManager(Activity activity) {
         this.context = activity;
         initLocation();
     }
 
-    private void initLocation()
-    {
-        //初始化client
-        locationClient = new AMapLocationClient(context);
-        locationOption = getDefaultOption();
-        //设置定位参数
-        locationClient.setLocationOption(locationOption);
-        // 设置定位监听
-        locationClient.setLocationListener(locationListener);
+    private void initLocation() {
+        try {
+            //初始化client
+            locationClient = new AMapLocationClient(context);
+            locationOption = getDefaultOption();
+            //设置定位参数
+            locationClient.setLocationOption(locationOption);
+            // 设置定位监听
+            locationClient.setLocationListener(locationListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
     /**
      * 默认的定位参数
-     * @author blueberry
      *
+     * @author blueberry
      */
-    private AMapLocationClientOption getDefaultOption(){
+    private AMapLocationClientOption getDefaultOption() {
         AMapLocationClientOption mOption = new AMapLocationClientOption();
         mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
         mOption.setGpsFirst(false);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
@@ -78,15 +83,15 @@ public class GdLocationManager {
         @Override
         public void onLocationChanged(AMapLocation location) {
             if (null != location) {
-                if(location.getErrorCode() == 0) {
-                    if(msg != null){
+                if (location.getErrorCode() == 0) {
+                    if (msg != null) {
                         msg = null;
                     }
                     msg = new LocationMsg();
                     msg.setMsg_location(location.getAddress());
                     msg.setMsg_speed(location.getSpeed());
 
-                }else{
+                } else {
                     msg = new LocationMsg();
                     msg.setMsg_location("无法定位");
                     msg.setMsg_speed(0);
@@ -103,32 +108,33 @@ public class GdLocationManager {
 
     /**
      * 开始定位
-     * @author blueberry
      *
+     * @author blueberry
      */
-    public void startLocation(){
-        // 设置定位参数
-        locationClient.setLocationOption(locationOption);
-        // 启动定位
-        locationClient.startLocation();
+    public void startLocation() {
+        if (locationClient != null) {
+            locationClient.setLocationOption(locationOption);
+            // 启动定位
+            locationClient.startLocation();
+        }
     }
 
     /**
      * 停止定位
-     * @author blueberry
      *
+     * @author blueberry
      */
-    public void stopLocation(){
+    public void stopLocation() {
         // 停止定位
         locationClient.stopLocation();
     }
 
     /**
      * 销毁定位
-     * @author blueberry
      *
+     * @author blueberry
      */
-    public void destroyLocation(){
+    public void destroyLocation() {
         if (null != locationClient) {
             /**
              * 如果AMapLocationClient是在当前Activity实例化的，
